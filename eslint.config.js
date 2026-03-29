@@ -32,6 +32,7 @@ export default defineConfig(
 				{
 					cspell: {
 						words: [
+							'pandoc',
 							'unidir',
 							'bidir',
 							'combinators',
