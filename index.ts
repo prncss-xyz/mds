@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import path from 'path'
+import fs from 'node:fs/promises'
+import path from 'node:path'
 
 import { processHtml } from './process/html.ts'
 
@@ -9,15 +10,24 @@ if (args.length === 0) {
 	process.exit(0)
 }
 
-for (const source of args) {
-	const ext = path.extname(source)
+await Promise.all(
+	args.map(async (source) => {
+		try {
+			await fs.access(source)
+		} catch {
+			console.error(`File not found: ${source}`)
+			return
+		}
 
-	const target = `${source}.s.md`
-	switch (ext) {
-		case '.html':
-			processHtml(source, target)
-			break
-		default:
-			console.error(`Unsupported format: ${ext}`)
-	}
-}
+		const ext = path.extname(source)
+
+		const target = `${source}.s.md`
+		switch (ext) {
+			case '.html':
+				await processHtml(source, target)
+				break
+			default:
+				console.error(`Unsupported format: ${ext}`)
+		}
+	}),
+)
