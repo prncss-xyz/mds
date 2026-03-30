@@ -21,11 +21,11 @@ export async function scan(
 		process.exit(1)
 	}
 
-	let errorCode = 0
+	const tasks: Promise<void>[] = []
 
-	for await (const source of iterateDir(dir)) {
+	const processSource = async (source: string) => {
 		const target = `${source}.s.md`
-		if ((opts?.force) || await fileExists(target)) continue
+		if (!opts?.force && (await fileExists(target))) return
 
 		const meta = await fetchMeta(source)
 		const metadataArgs = Object.entries(meta).flatMap(([key, value]) => [
@@ -33,28 +33,34 @@ export async function scan(
 			`${key}=${String(value)}`,
 		])
 
-		try {
-			await new Promise((resolve, reject) => {
-				const pandoc = spawn('pandoc', [
-					source,
-					...metadataArgs,
-					'-t',
-					'markdown',
-					'-s',
-					'--lua-filter=src/strip-html.lua',
-					'-o',
-					target,
-				])
-				pandoc.on('close', (code) => {
-					if (code === 0) resolve(0)
-					else reject(new Error(`pandoc exited with code ${code}`))
-				})
+		await new Promise<void>((resolve, reject) => {
+			const pandoc = spawn('pandoc', [
+				source,
+				...metadataArgs,
+				'-t',
+				'markdown',
+				'-s',
+				'--lua-filter=src/strip-html.lua',
+				'-o',
+				target,
+			])
+			pandoc.on('close', (code) => {
+				if (code === 0) resolve()
+				else reject(new Error(`pandoc exited with code ${code}`))
 			})
-		} catch (e) {
-			console.error(`pandoc error: ${e}`)
-			errorCode = 1
-		}
+		})
 	}
 
-	process.exit(errorCode)
+	await iterateDir(dir, async (source) => {
+		tasks.push(
+			processSource(source).catch((e) => console.error(`pandoc error: ${e}`)),
+		)
+	})
+
+	await Promise.all(tasks)
+
+	const results = await Promise.allSettled(tasks)
+	const failed = results.some((r) => r.status === 'rejected')
+
+	process.exit(failed ? 1 : 0)
 }
