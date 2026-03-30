@@ -1,8 +1,72 @@
 import { spawn } from 'node:child_process'
 import { stat } from 'node:fs/promises'
+import { extname } from 'node:path'
 
 import { fileExists, iterateDir } from '../../files.ts'
 import { fetchMeta } from './meta/index.ts'
+
+const extensions = [
+	'.adoc',
+	'.asciidoc',
+	'.bib',
+	'.biblatex',
+	'.bits',
+	'.csljson',
+	'.creole',
+	'.csv',
+	'.tsv',
+	'.djot',
+	'.docbook',
+	'.dbk',
+	'.docx',
+	'.dokuwiki',
+	'.dw',
+	'.endnotexml',
+	'.enl',
+	'.epub',
+	'.fb2',
+	'.fb',
+	'.gfm',
+	'.haddock',
+	'.hd',
+	'.html',
+	'.htm',
+	'.ipynb',
+	'.jats',
+	'.xml',
+	'.jira',
+	'.json',
+	'.tex',
+	'.latex',
+	'.ltx',
+	'.man',
+	'.me',
+	'.ms',
+	'.mdoc',
+	'.muse',
+	'.native',
+	'.odt',
+	'.opml',
+	'.org',
+	'.pod',
+	'.pptx',
+	'.ris',
+	'.rtf',
+	'.rst',
+	'.re',
+	'.s5',
+	'.slideous',
+	'.slidy',
+	'.dzslides',
+	'.revealjs',
+	'.t2t',
+	'.textile',
+	'.tikiwiki',
+	'.twiki',
+	'.typst',
+	'.vimwiki',
+	'.xlsx',
+]
 
 export async function scan(
 	dir: string,
@@ -24,6 +88,8 @@ export async function scan(
 	const tasks: Promise<void>[] = []
 
 	const processSource = async (source: string) => {
+		const ext = extname(source)
+		if (!extensions.includes(ext)) return
 		const target = `${source}.s.md`
 		if (!opts?.force && (await fileExists(target))) return
 

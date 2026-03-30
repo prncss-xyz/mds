@@ -1,7 +1,7 @@
 import { access, readdir } from 'node:fs/promises'
 import { join } from 'node:path'
 
-async function _iterateDir(
+async function iterateDir0(
 	dir: string,
 	onFile: (file: string) => Promise<void> | void,
 ): Promise<void> {
@@ -10,7 +10,7 @@ async function _iterateDir(
 		if (entry.name.startsWith('.')) continue
 		const fullPath = join(dir, entry.name)
 		if (entry.isDirectory()) {
-			await _iterateDir(fullPath, onFile)
+			await iterateDir0(fullPath, onFile)
 			continue
 		}
 		await onFile(fullPath)
@@ -21,7 +21,7 @@ export function iterateDir(
 	dir: string,
 	onFile: (file: string) => Promise<void> | void,
 ): Promise<void> {
-	return _iterateDir(dir, async (file) => {
+	return iterateDir0(dir, async (file) => {
 		await onFile(file)
 	})
 }
