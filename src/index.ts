@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { scan } from './commands/scan'
+import { scan } from './commands/scan/index.ts'
 
-const [, , ...args] = process.argv
+const [, , dir] = process.argv
 
-await scan(args)
+await scan(dir ?? '.')
