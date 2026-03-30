@@ -4,7 +4,12 @@ import { stat } from 'node:fs/promises'
 import { fileExists, iterateDir } from '../../files.ts'
 import { fetchMeta } from './meta/index.ts'
 
-export async function scan(dir: string) {
+export async function scan(
+	dir: string,
+	opts?: {
+		force?: boolean
+	},
+) {
 	if (!(await fileExists(dir))) {
 		console.error(`Directory not found: ${dir}`)
 		process.exit(1)
@@ -20,7 +25,7 @@ export async function scan(dir: string) {
 
 	for await (const source of iterateDir(dir)) {
 		const target = `${source}.s.md`
-		if (await fileExists(target)) continue
+		if ((opts?.force) || await fileExists(target)) continue
 
 		const meta = await fetchMeta(source)
 		const metadataArgs = Object.entries(meta).flatMap(([key, value]) => [

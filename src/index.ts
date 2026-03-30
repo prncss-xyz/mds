@@ -4,4 +4,4 @@ import { scan } from './commands/scan/index.ts'
 
 const [, , dir] = process.argv
 
-await scan(dir ?? '.')
+await scan(dir ?? 'sample', { force: true })

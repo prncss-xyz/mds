@@ -125,6 +125,7 @@ export default defineConfig(
 		},
 	},
 	globalIgnores([
+		'**/sample',
 		'**/dist/',
 		'**/.cache/',
 		'**/.turbo/',
