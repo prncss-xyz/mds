@@ -40,10 +40,10 @@ export async function scan(
 		await new Promise<void>((resolve, reject) => {
 			const pandoc = spawn('pandoc', [
 				source,
-				...metadataArgs,
 				'-t',
 				'markdown',
 				'-s',
+				...metadataArgs,
 				'--lua-filter=src/strip-html.lua',
 				'-o',
 				target,

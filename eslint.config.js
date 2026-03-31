@@ -32,6 +32,8 @@ export default defineConfig(
 				{
 					cspell: {
 						words: [
+							'autodrain',
+							'unzipper',
 							'pandoc',
 							'adoc',
 							'asciidoc',

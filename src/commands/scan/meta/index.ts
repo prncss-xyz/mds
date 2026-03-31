@@ -3,10 +3,12 @@ import { createReadStream } from 'node:fs'
 import fs from 'node:fs/promises'
 import { extname } from 'node:path'
 
-import { processHtml } from './html.ts'
+import { citationFromEPUB } from './epub.ts'
+import { citationFromHtml } from './html.ts'
 
 const processors = {
-	'.html': processHtml,
+	'.epub': citationFromEPUB,
+	'.html': citationFromHtml,
 }
 
 function hasProcessor(ext: string): ext is keyof typeof processors {
@@ -24,6 +26,7 @@ export async function fetchMeta(
 		checksum,
 		mtime: stats.mtimeMs,
 		path,
+		type: 'source',
 		...meta,
 	}
 }

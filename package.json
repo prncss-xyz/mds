@@ -22,6 +22,9 @@
 	"dependencies": {
 		"eslint": "^10.1.0",
 		"prettier": "^3.8.1",
+		"unist-util-visit": "^5.1.0",
+		"unzipper": "^0.12.3",
+		"xast-util-from-xml": "^4.0.0",
 		"xdg-basedir": "^5.1.0",
 		"yaml": "^2.8.3",
 		"zod": "^4.3.6"
@@ -30,6 +33,7 @@
 		"@cspell/eslint-plugin": "^9.7.0",
 		"@eslint/js": "^10.0.1",
 		"@types/node": "^25.5.0",
+		"@types/unzipper": "^0.10.11",
 		"@types/yaml": "^1.9.7",
 		"eslint-plugin-only-warn": "^1.2.1",
 		"eslint-plugin-perfectionist": "^5.7.0",

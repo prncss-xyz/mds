@@ -3,6 +3,7 @@ checksum: BhYu2EP+EJxa6A7nbNWieQ==
 lang: en
 mtime: 1774821878484.8672
 path: sample/tagged.html
+type: source
 ---
 
 [Skip to main content](#main-content)
