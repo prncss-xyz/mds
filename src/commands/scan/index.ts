@@ -2,25 +2,23 @@ import { spawn } from 'node:child_process'
 import { stat } from 'node:fs/promises'
 import { extname } from 'node:path'
 
-import { fileExists, iterateDir } from '../../files.ts'
+import { fileExists, iterateFiles } from '../../files.ts'
 import { extensions } from './extensions.ts'
 import { fetchMeta } from './meta/index.ts'
 
 export async function scan(
-	dir: string,
+	target: string | string[],
 	opts?: {
 		force?: boolean
 	},
 ) {
-	if (!(await fileExists(dir))) {
-		console.error(`Directory not found: ${dir}`)
-		process.exit(1)
-	}
+	const targets = Array.isArray(target) ? target : [target]
 
-	const stats = await stat(dir)
-	if (!stats.isDirectory()) {
-		console.error(`${dir} is not a directory`)
-		process.exit(1)
+	for (const t of targets) {
+		if (!(await fileExists(t))) {
+			console.error(`File or directory not found: ${t}`)
+			process.exit(1)
+		}
 	}
 
 	const tasks: Promise<void>[] = []
@@ -28,8 +26,8 @@ export async function scan(
 	const processSource = async (source: string) => {
 		const ext = extname(source)
 		if (!extensions.includes(ext)) return
-		const target = `${source}.s.md`
-		if (!opts?.force && (await fileExists(target))) return
+		const targetFile = `${source}.s.md`
+		if (!opts?.force && (await fileExists(targetFile))) return
 
 		const meta = await fetchMeta(source)
 		const metadataArgs = Object.entries(meta).flatMap(([key, value]) => [
@@ -46,7 +44,7 @@ export async function scan(
 				...metadataArgs,
 				'--lua-filter=src/strip-html.lua',
 				'-o',
-				target,
+				targetFile,
 			])
 			pandoc.on('close', (code) => {
 				if (code === 0) resolve()
@@ -55,7 +53,7 @@ export async function scan(
 		})
 	}
 
-	await iterateDir(dir, async (source) => {
+	await iterateFiles(targets, async (source) => {
 		tasks.push(
 			processSource(source).catch((e) => console.error(`pandoc error: ${e}`)),
 		)

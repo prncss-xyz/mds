@@ -2,6 +2,6 @@
 
 import { scan } from './commands/scan/index.ts'
 
-const [, , dir] = process.argv
+const [, , ...files] = process.argv
 
-await scan(dir ?? 'sample', { force: true })
+await scan(files.length > 0 ? files : 'sample', { force: true })
