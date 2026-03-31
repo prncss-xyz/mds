@@ -1,5 +1,6 @@
 ---
 checksum: BhYu2EP+EJxa6A7nbNWieQ==
+format: html
 lang: en
 mtime: 1774821878484.8672
 path: sample/tagged.html

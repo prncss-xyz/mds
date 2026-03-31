@@ -1,9 +1,9 @@
 ---
-author: toto
+author: Oscar Wilde
 checksum: DJq61inZumTtMJ8HLBdLRw==
 date: 1994-10-01
+format: epub
 identifier: "http://www.gutenberg.org/174"
-issued: 1994-10-01
 language: en
 mtime: 1774919957283.5967
 path: sample/pg174-images-3.epub
@@ -18,7 +18,6 @@ subject:
 - Conduct of life \-- Fiction
 - Supernatural \-- Fiction
 - Didactic fiction
-subtype: book
 title: The Picture of Dorian Gray
 type: source
 ---

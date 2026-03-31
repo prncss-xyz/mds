@@ -4,11 +4,11 @@ import fs from 'node:fs/promises'
 import { extname } from 'node:path'
 
 import { citationFromEPUB } from './epub.ts'
-import { citationFromHtml } from './html.ts'
+import { citationFromHTML } from './html.ts'
 
 const processors = {
 	'.epub': citationFromEPUB,
-	'.html': citationFromHtml,
+	'.html': citationFromHTML,
 }
 
 function hasProcessor(ext: string): ext is keyof typeof processors {
@@ -24,6 +24,7 @@ export async function fetchMeta(
 	const meta = hasProcessor(ext) ? await processors[ext](path) : {}
 	return {
 		checksum,
+		format: ext.slice(1),
 		mtime: stats.mtimeMs,
 		path,
 		type: 'source',
