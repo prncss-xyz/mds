@@ -66,20 +66,20 @@ export function register(
 	if (typeof value !== 'string') return
 	if (!value) return
 	if (isSgField(field)) {
-		const f = acc.citation[field]
+		const f = acc.citation[field] as SgFieldAcc
 		if (f && f.priority >= priority) return
-		acc.citation[field] = { priority, value }
+		;(acc.citation as Record<string, SgFieldAcc>)[field] = { priority, value }
 		if (field === 'URL') {
 			acc.adapter = getAdapter(value)
 		}
 		return
 	}
 	if (isPlField(field)) {
-		const f = acc.citation[field]
+		const f = acc.citation[field] as PlFieldAcc
 		if (f && f.priority > priority) return
 		const values = f && f.priority === priority ? f.values : []
 		values.push(value)
-		acc.citation[field] = { priority, values }
+		;(acc.citation as Record<string, PlFieldAcc>)[field] = { priority, values }
 		return
 	}
 	throw new Error('unexpected field name: ' + field)
