@@ -17,19 +17,37 @@ async function iterateDir(
 	}
 }
 
-export async function iterateFiles(
-	targets: string[],
+export async function processFiles(
+	targets: string | string[],
 	onFile: (file: string) => Promise<void> | void,
-): Promise<void> {
-	for (const target of targets) {
-		const stats = await stat(target)
-		if (stats.isDirectory()) {
-			await iterateDir(target, onFile)
-		} else {
-			await onFile(target)
+) {
+	const tasks: Promise<void>[] = []
+	// Collect tasks while iterating
+	const wrappedOnFile = async (file: string) => {
+		const result = onFile(file)
+		if (result instanceof Promise) {
+			tasks.push(result)
 		}
 	}
+
+	const targets0 = Array.isArray(targets) ? targets : [targets]
+	for (const target of targets0) {
+		const stats = await stat(target)
+		if (!(await fileExists(target))) {
+			console.error(`File or directory not found: ${target}`)
+		}
+		if (stats.isDirectory()) {
+			await iterateDir(target, wrappedOnFile)
+		} else {
+			await wrappedOnFile(target)
+		}
+	}
+
+	const res = await Promise.allSettled(tasks)
+	if (res.every((v) => v.status === 'fulfilled')) process.exit(0)
+	else process.exit(1)
 }
+
 export async function fileExists(source: string) {
 	try {
 		await access(source)
