@@ -13,8 +13,9 @@ function IEPAuthors(tree: Element) {
 	let inp = false
 	for (const children of tree.children) {
 		if (children.type !== 'element') return
-		if (!('value' in children.children?.[0])) return
-		const value = children.children[0].value
+		const firstChild = children.children?.[0]
+		if (!firstChild || !('value' in firstChild)) return
+		const value = firstChild.value
 		if (children.tagName === 'h3') {
 			if (value === 'Author Information') {
 				inp = true

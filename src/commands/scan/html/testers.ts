@@ -79,12 +79,12 @@ function registerLDgraph(priority: number, acc: Acc, raw: string) {
 		const graph = parsed?.['@graph']?.[0]
 		if (!graph) return
 		if (getLog()) {
-			graph.url && console.log('URL', priority, 'LDGraph', graph.url)
-			graph.author?.name &&
+			if (graph.url) console.log('URL', priority, 'LDGraph', graph.url)
+			if (graph.author?.name)
 				console.log('authors', 'LDGraph', priority, graph.author?.name)
-			graph.datePublished &&
+			if (graph.datePublished)
 				console.log('issued', 'LDGraph', priority, graph.datePublished)
-			graph.dateModified &&
+			if (graph.dateModified)
 				console.log('modified', 'LDGraph', priority, graph.dateModified)
 		}
 		register(acc, 'URL', priority, graph.url)
