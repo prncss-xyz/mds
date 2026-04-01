@@ -3,11 +3,9 @@ import { createReadStream } from 'node:fs'
 import fs from 'node:fs/promises'
 import { extname } from 'node:path'
 
-import { citationFromEPUB } from './epub.ts'
 import { citationFromHTML } from './html.ts'
 
 const processors = {
-	'.epub': citationFromEPUB,
 	'.html': citationFromHTML,
 }
 
