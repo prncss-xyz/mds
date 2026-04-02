@@ -23,9 +23,9 @@ type Test =
 			select: Select
 	  }
 
-function applyTest(criteria: Test, node: Element): string {
+function applyTest(criteria: Test, node: Element): string | undefined {
 	if (typeof criteria === 'function') {
-		return criteria(node) ?? ''
+		return criteria(node)
 	}
 	const { extract, select } = criteria
 	if (select.tagName && node.tagName !== select.tagName) return ''
@@ -40,7 +40,7 @@ function applyTest(criteria: Test, node: Element): string {
 	if (extract) {
 		const res = node.properties?.[extract]
 		if (typeof res === 'string') return res
-		return ''
+		return undefined
 	}
 	return toText(node)
 }
@@ -77,21 +77,58 @@ export function registerTests(priority: number, acc: Acc, node: Element) {
 function registerLDgraph(priority: number, acc: Acc, raw: string) {
 	try {
 		const parsed = JSON.parse(raw)
-		const graph = parsed?.['@graph']?.[0]
+		const items = Array.isArray(parsed)
+			? parsed
+			: Array.isArray(parsed?.['@graph'])
+				? parsed['@graph']
+				: [parsed]
+		const graph = items.find((item: unknown) => {
+			if (!item || typeof item !== 'object') return false
+			const obj = item as { [key: string]: unknown }
+			return !!(obj.url || obj.headline || obj.name || obj.author)
+		}) as undefined | { [key: string]: unknown }
 		if (!graph) return
+		const author = graph.author
+		const authors = Array.isArray(author)
+			? author
+					.map((entry) => {
+						if (typeof entry === 'string') return entry
+						if (!entry || typeof entry !== 'object') return
+						const mapped = entry as { [key: string]: unknown }
+						const name = mapped.name
+						return typeof name === 'string' ? name : undefined
+					})
+					.filter((entry): entry is string => typeof entry === 'string')
+			: typeof author === 'string'
+				? [author]
+				: author && typeof author === 'object'
+					? (() => {
+							const mapped = author as { [key: string]: unknown }
+							const name = mapped.name
+							return typeof name === 'string' ? [name] : []
+						})()
+					: []
+		const title =
+			typeof graph.headline === 'string'
+				? graph.headline
+				: typeof graph.name === 'string'
+					? graph.name
+					: undefined
 		if (getLog()) {
-			if (graph.url) console.log('URL', priority, 'LDGraph', graph.url)
-			if (graph.author?.name)
-				console.log('authors', 'LDGraph', priority, graph.author?.name)
-			if (graph.datePublished)
+			if (typeof graph.url === 'string')
+				console.log('URL', priority, 'LDGraph', graph.url)
+			if (authors.length > 0)
+				console.log('authors', 'LDGraph', priority, authors.join(', '))
+			if (typeof graph.datePublished === 'string')
 				console.log('issued', 'LDGraph', priority, graph.datePublished)
-			if (graph.dateModified)
+			if (typeof graph.dateModified === 'string')
 				console.log('modified', 'LDGraph', priority, graph.dateModified)
 		}
 		register(acc, 'URL', priority, graph.url)
-		register(acc, 'author', priority, graph.author?.name)
+		for (const name of authors) register(acc, 'author', priority, name)
 		register(acc, 'issued', priority, graph.datePublished)
 		register(acc, 'modified', priority, graph.dateModified)
+		register(acc, 'title', priority, title)
 	} catch {
 		// do nothing
 	}

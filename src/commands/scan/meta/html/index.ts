@@ -62,10 +62,10 @@ function readMeta(tree: Nodes): Partial<Citation> {
 			return
 		}
 		if (node.type === 'element') {
-			registerTests(priority + 1, acc, node)
-			return (
-				test('title', 0, { select: { tagName: 'h1' } }, acc, node) ||
-				testMeta(acc, node) ||
+			if (registerTests(priority + 1, acc, node)) return
+			if (test('title', 0, { select: { tagName: 'h1' } }, acc, node)) return
+			testMeta(acc, node)
+			if (
 				test(
 					'URL',
 					1,
@@ -79,11 +79,23 @@ function readMeta(tree: Nodes): Partial<Citation> {
 					},
 					acc,
 					node,
-				) ||
-				test('URL', 2, { select: { tagName: 'base' } }, acc, node) ||
-				test('title', 3, { select: { tagName: 'title' } }, acc, node) ||
-				testLDgraph(priority, acc, node)
+				)
 			)
+				return
+			if (test('URL', 2, { select: { tagName: 'base' } }, acc, node)) return
+			if (
+				test(
+					'URL',
+					2,
+					{ extract: 'href', select: { tagName: 'base' } },
+					acc,
+					node,
+				)
+			)
+				return
+			if (test('title', 3, { select: { tagName: 'title' } }, acc, node)) return
+			if (testLDgraph(priority, acc, node)) return
+			return
 		}
 	})
 	const citation = applyAdapters(fromAcc(acc), acc.adapter, tree)
@@ -92,8 +104,9 @@ function readMeta(tree: Nodes): Partial<Citation> {
 		const i = hostname.endsWith('.qc.ca') ? 3 : 2
 		citation.source = hostname.split('.').at(-i)
 	}
-	console.log('_____________')
-	console.log(citation)
+	if (getLog()) {
+		console.log(citation)
+	}
 	return citation
 }
 

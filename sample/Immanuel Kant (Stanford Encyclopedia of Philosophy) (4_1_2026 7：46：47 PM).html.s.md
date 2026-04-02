@@ -1,11 +1,19 @@
 ---
+archived: "Wed Apr 01 2026 19:46:47 GMT-0400 (Eastern Daylight Time)"
+author: Rohlf, Michael
 checksum: 6ABfTQSPvXs3JrDY/c3PgA==
 format: html
+issued: 2010-05-20
 lang: en
+modified: 2024-07-31
 mtime: 1775087233139.1895
 path: sample/Immanuel Kant (Stanford Encyclopedia of Philosophy)
   (4_1_2026 7：46：47 PM).html
+source: SEP
+subtype: article
+title: Immanuel Kant
 type: source
+URL: "https://plato.stanford.edu/entries/kant/"
 ---
 
 Immanuel Kant (Stanford Encyclopedia of Philosophy)
