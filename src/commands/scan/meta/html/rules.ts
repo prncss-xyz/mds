@@ -1,7 +1,7 @@
 import type { Adapter } from './adapters.ts'
 
-import { getLog } from '../../../log.ts'
-import { type Citation, type Field, isPlField, isSgField } from '../citation.ts'
+import { getLog } from '../../../../log.ts'
+import { type Citation, type Field, isPlField, isSgField } from '../../citation.ts'
 import { getAdapter } from './adapters.ts'
 
 export type Acc = {

@@ -1,6 +1,6 @@
 import type { Nodes } from 'hast'
 
-import type { Citation } from '../citation.ts'
+import type { Citation } from '../../citation.ts'
 import type { ITest } from './testers.ts'
 
 export interface Adapter {

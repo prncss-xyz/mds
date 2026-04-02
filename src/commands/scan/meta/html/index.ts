@@ -5,10 +5,10 @@ import { readFile } from 'node:fs/promises'
 import { parse } from 'parse5'
 import { visit } from 'unist-util-visit'
 
-import type { Citation } from '../citation.ts'
+import type { Citation } from '../../citation.ts'
 import type { Acc } from './rules.ts'
 
-import { getLog } from '../../../log.ts'
+import { getLog } from '../../../../log.ts'
 import { applyAdapters } from './adapters.ts'
 import { fromAcc, register } from './rules.ts'
 import { setupAdapters } from './setupAdapters.ts'
@@ -92,6 +92,8 @@ function readMeta(tree: Nodes): Partial<Citation> {
 		const i = hostname.endsWith('.qc.ca') ? 3 : 2
 		citation.source = hostname.split('.').at(-i)
 	}
+	console.log('_____________')
+	console.log(citation)
 	return citation
 }
 

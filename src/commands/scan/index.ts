@@ -18,10 +18,9 @@ export async function scan(
 		if (!opts?.force && (await fileExists(targetFile))) return
 
 		const meta = await fetchMeta(source)
-		const metadataArgs = Object.entries(meta).flatMap(([key, value]) => [
-			'-M',
-			`${key}=${String(value)}`,
-		])
+		const metadataArgs = Object.entries(meta).flatMap(([key, value]) =>
+			value == undefined ? [] : ['-M', `${key}=${String(value)}`],
+		)
 
 		await new Promise<void>((resolve, reject) => {
 			const pandoc = spawn('pandoc', [

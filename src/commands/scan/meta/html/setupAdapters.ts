@@ -3,7 +3,7 @@ import type { Element } from 'hast'
 
 import { visit } from 'unist-util-visit'
 
-import type { Citation } from '../citation.ts'
+import type { Citation } from '../../citation.ts'
 
 import { setupAdapter } from './adapters.ts'
 import { getAttr, hasClass, toText } from './utils.ts'

@@ -3,37 +3,39 @@ import { createReadStream } from 'node:fs'
 import fs from 'node:fs/promises'
 import { extname } from 'node:path'
 
-import { citationFromHTML } from './html.ts'
+import type { Citation } from '../citation.ts'
 
-const processors = {
-	'.html': citationFromHTML,
-}
+import { citationFromHTML } from './html/index.ts'
 
-function hasProcessor(ext: string): ext is keyof typeof processors {
-	return ext in processors
+async function fetchSpecificMeta(
+	ext: string,
+	filename: string,
+): Promise<Citation> {
+	if (ext === '.html') return await citationFromHTML(filename)
+	return {}
 }
 
 export async function fetchMeta(
-	path: string,
+	filename: string,
 ): Promise<Record<string, unknown>> {
-	const ext = extname(path)
-	const stats = await fs.stat(path)
-	const checksum = await fetchChecksum(path)
-	const meta = hasProcessor(ext) ? await processors[ext](path) : {}
+	const ext = extname(filename)
+	const stats = await fs.stat(filename)
+	const checksum = await fetchChecksum(filename)
+	const meta = await fetchSpecificMeta(ext, filename)
 	return {
 		checksum,
 		format: ext.slice(1),
 		mtime: stats.mtimeMs,
-		path,
+		path: filename,
 		type: 'source',
 		...meta,
 	}
 }
 
-function fetchChecksum(filePath: string) {
-	return new Promise((resolve, reject) => {
+function fetchChecksum(filename: string) {
+	return new Promise<string>((resolve, reject) => {
 		const hash = createHash('md5')
-		const stream = createReadStream(filePath)
+		const stream = createReadStream(filename)
 		stream.on('error', (err) => {
 			reject(err)
 		})

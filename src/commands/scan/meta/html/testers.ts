@@ -2,10 +2,11 @@ import type { Element } from 'hast'
 
 import { toText } from 'hast-util-to-text'
 
-import type { Field } from '../citation.ts'
+import type { Field } from '../../citation.ts'
+import type { Acc } from './rules.ts'
 
-import { getLog } from '../../../log.ts'
-import { Acc, applyRules, register } from './rules.ts'
+import { getLog } from '../../../../log.ts'
+import { applyRules, register } from './rules.ts'
 import { getAttr, hasClass } from './utils.ts'
 
 interface Select {
@@ -31,7 +32,7 @@ function applyTest(criteria: Test, node: Element): string {
 	if (select.attr) {
 		const p = getAttr(select.attr, node)
 		if (!p) return ''
-		if (select.value && extract !== select.value) return ''
+		if (select.value && p !== select.value) return ''
 	}
 	if (select.className) {
 		if (!hasClass(select.className, node)) return ''
